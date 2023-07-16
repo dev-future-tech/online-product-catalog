@@ -3,7 +3,9 @@ package org.ikeda.store.web.ejb;
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
 import jakarta.enterprise.inject.Model;
+import jakarta.inject.Inject;
 import org.ikeda.store.core.Product;
+import org.ikeda.store.service.ProductService;
 
 import java.io.Serializable;
 import java.util.List;
@@ -21,8 +23,12 @@ public class ProductManager implements Serializable {
     private void init() {
         logger.info("new customer created");
         product = new Product();
-        setProducts(productBean.retrieveAllProducts());
+        setProducts(service.findAllProducts());
     }
+
+    @Inject
+    ProductService service;
+
     @EJB
     ProductBean productBean;
 

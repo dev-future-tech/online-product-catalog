@@ -1,10 +1,11 @@
 package org.ikeda.store.service;
 
 import jakarta.annotation.PostConstruct;
-import jakarta.ejb.Stateless;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.transaction.Transactional;
 import org.ikeda.store.core.Product;
 
 import java.util.ArrayList;
@@ -12,11 +13,12 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@Stateless
+@ApplicationScoped
+@Transactional
 public class ProductService {
     public static final Logger logger =
             Logger.getLogger(ProductService.class.getCanonicalName());
-    @PersistenceContext
+    @PersistenceContext(unitName = "ProductDb")
     private EntityManager em;
 
     private CriteriaBuilder cb;
@@ -32,7 +34,7 @@ public class ProductService {
         try {
             data = this.em.createNamedQuery("findAllProducts").getResultList();
         } catch (Exception e) {
-            logger.log(Level.WARNING, "Error when finding all customers");
+            logger.log(Level.WARNING, "Error when finding all products", e);
         }
         return data;
     }

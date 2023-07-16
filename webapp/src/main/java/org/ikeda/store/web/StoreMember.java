@@ -3,11 +3,16 @@ package org.ikeda.store.web;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.faces.annotation.ManagedProperty;
 import jakarta.inject.Named;
+import org.ikeda.store.web.ejb.ProductBean;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Named
 @RequestScoped
 public class StoreMember {
-
+    private static final Logger logger
+            = Logger.getLogger(StoreMember.class.getName());
     @ManagedProperty(value = "#{param.pageId}")
     private String pageId;
 
@@ -16,7 +21,7 @@ public class StoreMember {
     private String memberPoints;
 
     public String getUsername() {
-        return username;
+        return "Jackson";
     }
 
     public void setUsername(String username) {
@@ -32,6 +37,7 @@ public class StoreMember {
     }
 
     public String goToPage() {
+        logger.log(Level.INFO, "Going to page{0}", pageId);
         return pageId;
     }
 }
