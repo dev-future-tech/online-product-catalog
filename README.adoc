@@ -1,0 +1,39 @@
+= Online Product Catalog
+:version: 0.0.1
+:author: Anthony Ikeda <anthony.ikeda@gmail.com>
+:toc: right
+:authorinitials: AI
+
+== Introduction
+
+This is a modern monolithic application designed around JakartaEE 10. It's a reference implementation that is focused around migration and modernization to the cloud.
+
+== Pre-requisites
+
+This application requires a JakartaEE 9 compatible application server. Some examples include:
+
+* JBoss WildFly
+* Apache TomEE
+* WebSphere Community Edition
+
+The application is also built on Java 11.
+
+== Usage
+
+This project is to be used as an example of upgrading and migrating to a cloud native architecture.
+
+Specific areas of upgrade include:
+
+* Slice off functionality into microservices
+* Convert embedded UI to micro-frontend components
+* migrate the persistence layer from legacy ORM to cloud native data structures
+* Replacement of basic HTTP based communication to real-time reactive messaging and events
+
+== Architecture
+
+The architecture of the application revolves around the legacy MVC design. This application is modulithic in design which would be considered the lowest viable architecture on on-prem, monolithic applications. Each module is a horizontal slice of functionality that we will break down and create integrated microservices to demonstrate hybrid to CNA.
+
+== Authentication/Authorization
+
+TBD
+
