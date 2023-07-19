@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 @NamedQuery(name="findAllProducts",
     query="Select c from Product c order by c.productId")
-@Table(name = "products", schema="public")
+@Table(name = "products")
 @Entity
 public class Product implements Serializable {
 

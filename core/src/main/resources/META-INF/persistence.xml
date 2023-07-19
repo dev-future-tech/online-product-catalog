@@ -6,7 +6,7 @@
 
     <persistence-unit name="ProductDb" transaction-type="JTA">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <jta-data-source>jdbc/productDb</jta-data-source>
+        <jta-data-source>java:jboss/ProductDB</jta-data-source>
         <class>org.ikeda.store.core.Product</class>
         <class>org.ikeda.store.core.ProductRequest</class>
         <!--
@@ -17,5 +17,11 @@
             <property name="javax.persistence.jdbc.password" value="letmein"/>
         </properties>
         -->
+    </persistence-unit>
+
+    <persistence-unit name="TestingDb" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.ikeda.store.core.Product</class>
+        <class>org.ikeda.store.core.ProductRequest</class>
     </persistence-unit>
 </persistence>

@@ -34,9 +34,15 @@ public class ProductBean implements Serializable {
 
     public List<Product> retrieveAllProducts() {
         logger.info("Loading all products...");
-        return client.target("http://localhost:8080/online-product-catalog/webApi/Product")
+        return client.target("http://localhost:8080/online-product-catalog/webApi/home/all")
                 .request(MediaType.APPLICATION_JSON_TYPE)
-                .get(new GenericType<List<Product>>() {
+                .get(new GenericType<>() {
                 });
+    }
+
+    public Product findProductById(Long productId) {
+        return client.target(String.format("http://localhost:8080/online-product-catalog/webApi/home/%d", productId) )
+                .request(MediaType.APPLICATION_JSON_TYPE)
+                .get(new GenericType<>(){});
     }
 }

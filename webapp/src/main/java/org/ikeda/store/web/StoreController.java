@@ -1,10 +1,7 @@
 package org.ikeda.store.web;
 
 import jakarta.inject.Inject;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.ikeda.store.core.Product;
@@ -44,4 +41,22 @@ public class StoreController {
         return allProducts;
     }
 
+    @GET
+    @Path("{productId}")
+    public Product getProductById(@PathParam("productId") Long productId) {
+        Product product = null;
+
+        try {
+            product = productService.findProductById(productId);
+
+            if(product == null) {
+                throw new WebApplicationException((Response.Status.NOT_FOUND));
+            }
+        } catch(Exception e) {
+            logger.log(Level.SEVERE,
+                    "Error finding product with id {0}, {1}",
+                    new Object[]{productId, e.getMessage()});
+        }
+        return product;
+    }
 }

@@ -29,10 +29,55 @@
         <param-name>jakarta.faces.PROJECT_STAGE</param-name>
         <param-value>Production</param-value>
     </context-param>
+    
+    <context-param>
+        <param-name>jakarta.faces.FACELETS_LIBRARIES</param-name>
+        <param-value>/WEB-INF/facelets-config.xml</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>jakarta.faces.CONFIG_FILES</param-name>
+        <param-value>/WEB-INF/faces-config.xml</param-value>
+    </context-param>
 
     <resource-ref>
         <res-ref-name>jdbc/productDb</res-ref-name>
         <res-type>javax.sql.DataSource</res-type>
         <res-auth>Container</res-auth>
     </resource-ref>
+    <!--
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>consumer</web-resource-name>
+            <url-pattern>/consumer/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>Consumer</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>maintainer</web-resource-name>
+            <url-pattern>/admin/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>Maintainer</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-role>
+        <role-name>Consumer</role-name>
+    </security-role>
+    <security-role>
+        <role-name>Maintainer</role-name>
+    </security-role>
+    
+    <login-config>
+        <auth-method>FORM</auth-method>
+        <realm-name>online-product-catalog</realm-name>
+        <form-login-config>
+            <form-login-page>/login.xhtml</form-login-page>
+            <form-error-page>/error.xhtml</form-error-page>
+        </form-login-config>
+    </login-config>
+    -->
 </web-app>

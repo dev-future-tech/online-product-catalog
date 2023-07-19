@@ -1,0 +1,44 @@
+= Setup
+
+== LDAP Server
+
+Download https://www.openldap.org[OpenLDAP]
+
+Configure
+
+Start
+
+=== Create Realm
+
+=== Create Users
+
+
+
+== Database Server
+
+* Assume existing PostgreSQL database server is running
+* Assume Liquibase command line is installed
+
+=== Create User
+
+[source]
+----
+postgres=# create role product_admin with login password 'letmein';
+CREATE ROLE
+----
+
+=== Create Database
+
+[source]
+----
+postgres=# create database product_db with owner product_admin;
+CREATE DATABASE
+----
+
+
+=== Migrate Database Tables
+
+[source,bash]
+----
+$ liquibase migrate
+----

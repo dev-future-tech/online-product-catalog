@@ -1,0 +1,10 @@
+= Set of Micro Frontend components for the store
+
+== Tags
+
+[source,xml]
+----
+<store:product_panel product-id="\{id\}">
+    <store:product_image version="latest"></store:product_image>
+</store:product_panel>
+----

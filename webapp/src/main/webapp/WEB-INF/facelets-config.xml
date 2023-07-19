@@ -1,0 +1,39 @@
+<facelet-taglib xmlns="http://java.sun.com/xml/ns/javaee"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facelettaglibrary_2_0.xsd"
+                version="2.0">
+    <description>Store Components rednering custom views</description>
+    <display-name>Store Components</display-name>
+    <namespace>https://store.ikeda.org/customer/components</namespace>
+    <tag>
+        <tag-name>product_panel</tag-name>
+        <component>
+            <component-type>ProductPanel</component-type>
+            <renderer-type>ProductPanel</renderer-type>
+        </component>
+        <attribute>
+            <name>productId</name>
+            <required>true</required>
+            <type>java.lang.Long</type>
+        </attribute>
+
+        <attribute>
+            <name>styleClass</name>
+            <required>false</required>
+            <type>java.lang.String</type>
+        </attribute>
+
+        <attribute>
+           <name>product</name>
+            <required>true</required>
+            <type>org.ikeda.store.core.Product</type>
+        </attribute>
+    </tag>
+    <tag>
+        <tag-name>product_sell</tag-name>
+        <component>
+            <component-type>ProductDetails</component-type>
+            <renderer-type>ProductDetails</renderer-type>
+        </component>
+    </tag>
+</facelet-taglib>

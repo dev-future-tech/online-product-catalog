@@ -35,5 +35,6 @@ The architecture of the application revolves around the legacy MVC design. This 
 
 == Authentication/Authorization
 
-TBD
+While it's possible to build oAuth 2.0 integration from the ground up, it's not actually part of the EE Spec for authentication and authorization purposes. Instead this implementation will make use of basic LDAP functionality using https://www.openldap.org[OpenLDAP]
+
 

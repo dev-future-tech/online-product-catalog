@@ -1,0 +1,15 @@
+.product-panel {
+    border: thin solid green;
+}
+
+.title {
+    font-family: sans-serif;
+    font-weight: bold;
+    font-size: large;
+    clear: right;
+}
+
+.description {
+    font-family: sans-serif;
+    font-style: italic;
+}

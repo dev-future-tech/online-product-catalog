@@ -9,10 +9,13 @@ import org.ikeda.store.service.ProductService;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Model
 public class ProductManager implements Serializable {
+
+    private Long productId;
 
     private Product product;
     private List<Product> products;
@@ -24,6 +27,12 @@ public class ProductManager implements Serializable {
         logger.info("new customer created");
         product = new Product();
         setProducts(service.findAllProducts());
+
+        logger.fine("Getting product...");
+        this.product = this.service.findProductById(15L);
+
+        List<Product> results = this.productBean.retrieveAllProducts();
+        logger.log(Level.FINE, "Found {0} products", results.size());
     }
 
     @Inject
@@ -33,7 +42,7 @@ public class ProductManager implements Serializable {
     ProductBean productBean;
 
     public Product getProduct() {
-        return product;
+        return this.product;
     }
 
     public void setProduct(Product product) {
@@ -46,5 +55,13 @@ public class ProductManager implements Serializable {
 
     public void setProducts(List<Product> products) {
         this.products = products;
+    }
+
+    public Long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Long productId) {
+        this.productId = productId;
     }
 }

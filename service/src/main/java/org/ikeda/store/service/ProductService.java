@@ -39,4 +39,9 @@ public class ProductService {
         return data;
     }
 
+    public Product findProductById(Long productId) {
+        logger.log(Level.INFO, "Finding product with id {0}", productId);
+        return this.em.find(Product.class, productId);
+    }
+
 }

@@ -1,0 +1,202 @@
+databaseChangeLog:
+  - property:
+      dbms: postgresql
+      name: now
+      value: current_timestamp
+  - changeSet:
+      id: 1
+      author: aikeda
+      changes:
+        - createTable:
+            tableName: products
+            columns:
+              - column:
+                  name: product_id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: product_name
+                  type: varchar(150)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sku
+                  type: varchar(40)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(200)
+              - column:
+                  name: created_date
+                  type: datetime
+                  defaultValueDate: ${now}
+              - column:
+                  name: updated_date
+                  type: datetime
+                  defaultValueDate: ${now}
+        - createTable:
+            tableName: product_prices
+            columns:
+              - column:
+                  name: price_id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: product_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_product_price_id
+                    references: products(product_id)
+              - column:
+                  name: price
+                  type: double(4,2)
+                  defaultValue: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_date
+                  type: datetime
+                  defaultValueComputed: ${now}
+              - column:
+                  name: updated_date
+                  type: datetime
+                  defaultValueComputed: ${now}
+        - createTable:
+            tableName: product_labels
+            columns:
+              - column:
+                  name: product_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: label
+                  type: varchar(200)
+                  constraints:
+                    nullable: false
+        - createIndex:
+            indexName: idx_label_product_lookup
+            tableName: product_labels
+            columns:
+              - column:
+                  descending: true
+                  name: product_id
+  - changeSet:
+      id: 2
+      author: aikeda
+      changes:
+        - sqlFile:
+            dbms: postgresql
+            splitStatements: true
+            path: src/main/resources/db/insert_products.sql
+            stripComments: true
+  - changeSet:
+      id: 3
+      author: aikeda
+      changes:
+        - sql:
+            sql: |-
+              CREATE OR REPLACE FUNCTION change_update_time() RETURNS trigger
+                LANGUAGE plpgsql
+                AS '
+                BEGIN
+                  NEW.updated_date := CURRENT_TIMESTAMP;
+                  RETURN NEW;
+                END;
+              ';
+  - changeSet:
+      id: 4
+      author: aikeda
+      changes:
+        - sql:
+            dbms: postgresql
+            sql: |-
+              CREATE TRIGGER add_current_date_to_my_table
+              BEFORE UPDATE ON products FOR EACH ROW EXECUTE PROCEDURE change_update_time();
+  - changeSet:
+      id: 5
+      author: aikeda
+      changes:
+        - createTable:
+            tableName: product_requests
+            columns:
+              - column:
+                  name: request_id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: product_name
+                  type: varchar(60)
+              - column:
+                  name: brand
+                  type: varchar(40)
+              - column:
+                  name: size
+                  type: varchar(15)
+              - column:
+                  name: approved
+                  type: boolean
+                  defaultValueBoolean: false
+              - column:
+                  name: requested_by
+                  type: varchar(80)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: requested_on
+                  type: datetime
+                  defaultValueDate: ${now}
+  - changeSet:
+      id: 6
+      author: aikeda
+      changes:
+        - createTable:
+            tableName: customer_carts
+            columns:
+              - column:
+                  name: cart_id
+                  type: varchar(36)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: customer_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+        - createTable:
+            tableName: cart_contents
+            columns:
+              - column:
+                  name: cart_id
+                  type: varchar(36)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_customer_cart_id
+                    references: customer_carts(cart_id)
+              - column:
+                  name: product_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_product_cart_qty_id
+                    references: products(product_id)
+              - column:
+                  name: quantity
+                  type: int
+        - addPrimaryKey:
+            tableName: cart_contents
+            columnNames: cart_id,product_id
+            constraintName: pk_cart_contents
