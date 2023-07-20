@@ -2,7 +2,7 @@ site_name: 'Online Product Catalog'
 
 nav:
   - Home: index.md
-  - Architecture: ARCHITECRTURE.md
+  - Architecture: ARCHITECTURE.md
 
 plugins:
   - techdocs-core
