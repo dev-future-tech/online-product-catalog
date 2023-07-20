@@ -1,0 +1,9 @@
+site_name: 'Online Product Catalog'
+
+nav:
+  - Home: index.md
+  - Architecture: ARCHITECRTURE.md
+
+plugins:
+  - techdocs-core
+

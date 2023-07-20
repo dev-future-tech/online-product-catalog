@@ -9,6 +9,7 @@
         <jta-data-source>java:jboss/ProductDB</jta-data-source>
         <class>org.ikeda.store.core.Product</class>
         <class>org.ikeda.store.core.ProductRequest</class>
+        <class>org.ikeda.store.core.CartItems</class>
         <!--
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
@@ -23,5 +24,6 @@
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>org.ikeda.store.core.Product</class>
         <class>org.ikeda.store.core.ProductRequest</class>
+        <class>org.ikeda.store.core.CartItems</class>
     </persistence-unit>
 </persistence>

@@ -6,6 +6,8 @@ import java.util.List;
 
 @Entity
 @Table(name="customer_carts")
+@NamedQuery(name="findAllCartItems", query="select items from CartItems items where items.cartId = :cartId")
+@NamedQuery(name = "findAllCustomerCartItems", query = "select items from CartItems items where items.customerId = :customerId")
 public class CartItems {
 
     @Id
@@ -16,7 +18,7 @@ public class CartItems {
     private Long customerId;
 
     @OneToMany(targetEntity = Product.class)
-    @JoinTable(name="cart_contents", joinColumns={@JoinColumn(name="cart_id")})
+    @JoinTable(name="cart_contents", joinColumns={@JoinColumn(name="cart_id")}, inverseJoinColumns = {@JoinColumn(name="product_id")})
     private List<Product> items;
 
     public String getCartId() {
