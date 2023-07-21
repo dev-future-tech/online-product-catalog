@@ -101,6 +101,13 @@
             <version>4.23.0</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.jboss.weld.se</groupId>
+            <artifactId>weld-se-core</artifactId>
+            <version>5.1.1.Final</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

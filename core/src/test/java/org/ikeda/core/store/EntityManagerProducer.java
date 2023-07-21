@@ -3,6 +3,9 @@ package org.ikeda.core.store;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.inject.Qualifier;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
@@ -25,45 +28,41 @@ import java.util.logging.Logger;
 public class EntityManagerProducer {
     private final Logger log = Logger.getLogger(EntityManagerProducer.class.getCanonicalName());
 
-    private static final String POSTGRES_DB = "product_db";
-    private static final String POSTGRES_USER = "product_test_user";
-    private static final String POSTGRES_PASSWORD = "letmein";
+    private String jdbcUrl;
+    private String postgresDriver;
 
-    private static final String POSTGRES_DRIVER_CLASS = "org.postgresql.Driver";
+    @Inject
+    @Named("username")
+    private String username;
+
+    private String password;
+
+//    public EntityManagerProducer() {    }
+    @Inject
+    public EntityManagerProducer(@Named("containerJdbcUrl") String jdbcUrl, @Named("driverClass") String driverClass,
+                                 @Named("userPassword")String password) {
+        this.jdbcUrl = jdbcUrl;
+        this.postgresDriver = driverClass;
+        this.password = password;
+    }
 
     @PersistenceContext(unitName="TestingDb")
     private EntityManager em;
 
-    @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15")
-            .withDatabaseName(POSTGRES_DB)
-            .withPassword(POSTGRES_PASSWORD)
-            .withUsername(POSTGRES_USER)
-            .withExposedPorts(5432);
 
     @Produces
     @ApplicationScoped
     public EntityManager entityManager() throws Exception {
-        log.info("Starting Database");
-        postgres.start();
-//        final String jdbcUrl =  String.format("jdbc:postgresql://%s:%d/%s", postgres.getHost(), postgres.getMappedPort(5432), POSTGRES_DB);
 
-        log.log(Level.INFO, "Migrating database to {0}", postgres.getJdbcUrl());
-        ResourceAccessor accessor = new ClassLoaderResourceAccessor();
-        Database database = DatabaseFactory.getInstance().openDatabase(postgres.getJdbcUrl(), POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DRIVER_CLASS,
-                null, null, null, accessor);;
-        Liquibase liquibase = new Liquibase("db/database-changelog.yml", accessor, database);
-        PrintWriter out = new PrintWriter(System.out);
-        liquibase.update("", out);
-
-        log.info("Database migrated!");
         log.info("Creating EntityManager...");
+        log.log(Level.INFO,"EntityManager jdbcUrl is {0}", jdbcUrl);
+        log.log(Level.INFO,"EntityManager username is {0}", username);
 
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("TestingDb", Map.of(
-                "jakarta.persistence.jdbc.driver", POSTGRES_DRIVER_CLASS,
-                "jakarta.persistence.jdbc.url", postgres.getJdbcUrl(),
-                "jakarta.persistence.jdbc.user", POSTGRES_USER,
-                "jakarta.persistence.jdbc.password", POSTGRES_PASSWORD
+                "jakarta.persistence.jdbc.driver", postgresDriver,
+                "jakarta.persistence.jdbc.url", jdbcUrl,
+                "jakarta.persistence.jdbc.user", username,
+                "jakarta.persistence.jdbc.password", password
         ));
         em = emf.createEntityManager();
         return em;
