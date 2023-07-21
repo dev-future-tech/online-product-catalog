@@ -1,29 +1,15 @@
 package org.ikeda.core.store;
 
 
-import jakarta.enterprise.inject.Produces;
-import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
-import jakarta.persistence.PersistenceContext;
-import liquibase.Contexts;
-import liquibase.Liquibase;
-import liquibase.database.Database;
-import liquibase.database.DatabaseFactory;
-import liquibase.exception.LiquibaseException;
-import liquibase.resource.ClassLoaderResourceAccessor;
-import liquibase.resource.ResourceAccessor;
+import jakarta.persistence.PersistenceUnit;
 import org.ikeda.store.core.CartItems;
 import org.ikeda.store.core.Product;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,8 +21,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith({DatabaseSetupExtension.class, CDIExtension.class})
 class CartManagementTest {
 
-    @Inject
-    EntityManager entityManager;
+    @PersistenceUnit
+    EntityManagerFactory emf;
 
     private final Logger log = Logger.getLogger(CartManagementTest.class.getCanonicalName());
 
@@ -51,13 +37,18 @@ class CartManagementTest {
     @DisplayName("test that cart items can be retrieved")
     @Order(2)
     void testCartItems() {
+        EntityManager entityManager = emf.createEntityManager();
+        log.info(emf.getProperties().toString());
+        entityManager.getTransaction().begin();
         List<Product> products = entityManager.createNamedQuery("findAllProducts", Product.class).getResultList();
+        entityManager.getTransaction().commit();
         assertThat(products).isNotEmpty();
     }
 
     @Test
     @Order(3)
     public void testCreateCartItem() {
+        EntityManager entityManager = emf.createEntityManager();
 
         String cartId = UUID.randomUUID().toString();
         Long customerId = 456789L;

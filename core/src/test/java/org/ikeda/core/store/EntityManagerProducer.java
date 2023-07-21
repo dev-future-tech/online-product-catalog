@@ -1,25 +1,13 @@
 package org.ikeda.core.store;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-import jakarta.inject.Qualifier;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-import jakarta.persistence.PersistenceContext;
-import liquibase.Liquibase;
-import liquibase.database.Database;
-import liquibase.database.DatabaseFactory;
-import liquibase.resource.ClassLoaderResourceAccessor;
-import liquibase.resource.ResourceAccessor;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.io.PrintWriter;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,7 +25,6 @@ public class EntityManagerProducer {
 
     private String password;
 
-//    public EntityManagerProducer() {    }
     @Inject
     public EntityManagerProducer(@Named("containerJdbcUrl") String jdbcUrl, @Named("driverClass") String driverClass,
                                  @Named("userPassword")String password) {
@@ -46,14 +33,10 @@ public class EntityManagerProducer {
         this.password = password;
     }
 
-    @PersistenceContext(unitName="TestingDb")
-    private EntityManager em;
-
 
     @Produces
     @ApplicationScoped
-    public EntityManager entityManager() throws Exception {
-
+    public EntityManagerFactory entityManager() throws Exception {
         log.info("Creating EntityManager...");
         log.log(Level.INFO,"EntityManager jdbcUrl is {0}", jdbcUrl);
         log.log(Level.INFO,"EntityManager username is {0}", username);
@@ -62,9 +45,10 @@ public class EntityManagerProducer {
                 "jakarta.persistence.jdbc.driver", postgresDriver,
                 "jakarta.persistence.jdbc.url", jdbcUrl,
                 "jakarta.persistence.jdbc.user", username,
-                "jakarta.persistence.jdbc.password", password
+                "jakarta.persistence.jdbc.password", password,
+                "eclipselink.logging.level.sql", "FINE",
+                "eclipselink.logging.parameters", "true"
         ));
-        em = emf.createEntityManager();
-        return em;
+        return emf;
     }
 }

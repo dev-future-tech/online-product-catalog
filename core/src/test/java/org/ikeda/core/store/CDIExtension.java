@@ -4,6 +4,7 @@ import jakarta.enterprise.inject.se.SeContainer;
 import jakarta.enterprise.inject.se.SeContainerInitializer;
 import jakarta.inject.Inject;
 import jakarta.inject.Qualifier;
+import jakarta.persistence.PersistenceUnit;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestInstancePostProcessor;
 
@@ -23,7 +24,7 @@ public class CDIExtension implements TestInstancePostProcessor {
     @Override
     public void postProcessTestInstance(Object testInstance, ExtensionContext extensionContext) throws Exception {
         for (Field field : getFields(testInstance.getClass())) {
-            if(field.getAnnotation(Inject.class) != null) {
+            if(field.getAnnotation(Inject.class) != null || field.getAnnotation(PersistenceUnit.class) != null) {
                 Annotation[] qualifiers = Stream.of(field.getAnnotations())
                         .filter(IS_QUALIFIER)
                         .toArray(Annotation[]::new);
@@ -31,6 +32,8 @@ public class CDIExtension implements TestInstancePostProcessor {
                 field.setAccessible(true);
                 field.set(testInstance, injected);
             }
+
+
         }
     }
 

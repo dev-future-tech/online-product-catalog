@@ -1,11 +1,9 @@
 package org.ikeda.core.store;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Named;
-import jakarta.inject.Qualifier;
-import liquibase.Liquibase;
+import liquibase.command.CommandScope;
+import liquibase.command.core.helpers.DbUrlConnectionCommandStep;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.resource.ClassLoaderResourceAccessor;
@@ -17,7 +15,6 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.io.PrintWriter;
 import java.util.logging.Logger;
 
 @Testcontainers
@@ -32,7 +29,7 @@ public class DatabaseSetupExtension implements BeforeAllCallback, AfterAllCallba
     private static final String POSTGRES_DRIVER_CLASS = "org.postgresql.Driver";
 
     @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15")
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:14")
             .withDatabaseName(POSTGRES_DB)
             .withPassword(POSTGRES_PASSWORD)
             .withUsername(POSTGRES_USER)
@@ -45,13 +42,21 @@ public class DatabaseSetupExtension implements BeforeAllCallback, AfterAllCallba
         log.info("Running beforeAll with DatabaseExtension...");
         postgres.start();
 
-        ResourceAccessor accessor = new ClassLoaderResourceAccessor();
-        Database database = DatabaseFactory.getInstance().openDatabase(postgres.getJdbcUrl(), POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DRIVER_CLASS,
-                null, null, null, accessor);
-        Liquibase liquibase = new Liquibase("db/database-changelog.yml", accessor, database);
-        PrintWriter out = new PrintWriter(System.out);
-        liquibase.update("", out);
-        log.info("Database migrated!");
+        try {
+            ResourceAccessor accessor = new ClassLoaderResourceAccessor();
+            Database database = DatabaseFactory.getInstance().openDatabase(postgres.getJdbcUrl(), POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DRIVER_CLASS,
+                    null, null, null, accessor);
+            CommandScope update = new CommandScope("update")
+                    .addArgumentValue("changeLogFile", "db/database-changelog.yml")
+                            .addArgumentValue(DbUrlConnectionCommandStep.DATABASE_ARG, database);
+
+                    update.execute();
+            log.info("Database migrated!");
+        } catch(Exception e) {
+            log.severe("Error migrating database");
+            e.printStackTrace();
+        }
+
     }
 
     @Override
