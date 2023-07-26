@@ -1,7 +1,11 @@
 package org.ikeda.core.store;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Named;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 import liquibase.command.CommandScope;
 import liquibase.command.core.helpers.DbUrlConnectionCommandStep;
 import liquibase.database.Database;
@@ -15,6 +19,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.util.Map;
 import java.util.logging.Logger;
 
 @Testcontainers
@@ -37,8 +42,9 @@ public class DatabaseSetupExtension implements BeforeAllCallback, AfterAllCallba
 
     public DatabaseSetupExtension() {
     }
-    @Override
-    public void beforeAll(ExtensionContext context) throws Exception {
+
+    @PostConstruct
+    public void init() {
         log.info("Running beforeAll with DatabaseExtension...");
         postgres.start();
 
@@ -48,20 +54,38 @@ public class DatabaseSetupExtension implements BeforeAllCallback, AfterAllCallba
                     null, null, null, accessor);
             CommandScope update = new CommandScope("update")
                     .addArgumentValue("changeLogFile", "db/database-changelog.yml")
-                            .addArgumentValue(DbUrlConnectionCommandStep.DATABASE_ARG, database);
+                    .addArgumentValue(DbUrlConnectionCommandStep.DATABASE_ARG, database);
 
-                    update.execute();
+            update.execute();
             log.info("Database migrated!");
         } catch(Exception e) {
             log.severe("Error migrating database");
             e.printStackTrace();
         }
+    }
 
+    @Override
+    public void beforeAll(ExtensionContext context) throws Exception {
+        log.info("Starting database server...");
     }
 
     @Override
     public void close() throws Throwable {
 
+    }
+
+    @Produces
+    @Named
+    public EntityManagerFactory getEntityManagerFactory() {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("TestingDb", Map.of(
+                "jakarta.persistence.jdbc.driver", POSTGRES_DRIVER_CLASS,
+                "jakarta.persistence.jdbc.url", postgres.getJdbcUrl(),
+                "jakarta.persistence.jdbc.user", POSTGRES_USER,
+                "jakarta.persistence.jdbc.password", POSTGRES_PASSWORD,
+                "eclipselink.logging.level.sql", "FINE",
+                "eclipselink.logging.parameters", "true"
+        ));
+        return emf;
     }
 
     @Produces

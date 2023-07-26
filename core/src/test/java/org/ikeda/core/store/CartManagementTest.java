@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-//@Testcontainers
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ExtendWith({DatabaseSetupExtension.class, CDIExtension.class})
 class CartManagementTest {

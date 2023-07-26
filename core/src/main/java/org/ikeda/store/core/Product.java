@@ -6,12 +6,14 @@ import java.io.Serializable;
 
 @NamedQuery(name="findAllProducts",
     query="Select c from Product c order by c.productId")
+@NamedQuery(name="findById", query="Select p from Product p where p.productId = :productId")
 @Table(name = "products", schema="public")
 @Entity
 public class Product implements Serializable {
 
     @Id
     @Column(name = "product_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long productId;
 
     @Column(name = "sku")
