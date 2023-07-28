@@ -42,3 +42,71 @@ CREATE DATABASE
 ----
 $ liquibase migrate
 ----
+
+
+== WildFly Configuration
+
+=== PostgreSQL JDBC Driver
+
+In the `$WILDFLY_HOME/modules` create the following directories: `org/postgresql/main`
+
+Next create the following file:
+
+.$WILDFLY_HOME/org/postgresql/main/module.xml
+[source,xml]
+----
+<module xmlns="urn:jboss:module:1.1" name="org.postgresql">
+    <resources>
+      <resource-root path="postgresql-42.6.0.jar"/>
+    </resources>
+    <dependencies>
+      <module name="javax.api"/>
+      <module name="javax.transaction.api"/>
+    </dependencies>
+  </module>
+----
+
+Download the PostgreSQL JDBC Driver Jar and copy to: `org/postgresql/main/postgresql-42.6.0.jar`
+
+=== JNDI Database Connection Pool
+
+Open the `$WILDFILY_HOME/standalone/configuration/standalone.xml` file and update the following section:
+
+.$WILDFLY_HOME/standalone/configuration/standalone.xml
+[source,xml,options=nowrap]
+----
+<subsystem xmlns="urn:jboss:domain:datasources:7.0">
+    <datasources>
+        <!-- Other datasources... -->
+        <datasource jndi-name="java:jboss/ProductDB" pool-name="ProductDB">
+            <connection-url>jdbc:postgresql://localhost:5432/product_db</connection-url>
+            <driver>postgresql</driver>
+            <security>
+                <user-name>product_admin</user-name>
+                <password>{your_password}</password>
+            </security>
+            <validation>
+                <valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker"/>
+                <exception-sorter class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLExceptionSorter"/>
+            </validation>
+        </datasource>
+        <drivers>
+            <driver name="postgresql" module="org.postgresql">
+                <xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class>
+            </driver>
+        </drivers>
+    </datasources>
+</subsystem>
+----
+
+Start WildFly:
+
+[source,bash,options=nowrap]
+----
+$ bin/standalone.sh
+...
+10:12:22,636 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0060: Http management interface listening on http://127.0.0.1:9990/management
+10:12:22,636 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0051: Admin console listening on http://127.0.0.1:9990
+10:12:22,637 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: WildFly Full 28.0.1.Final (WildFly Core 20.0.2.Final) started in 3176ms - Started 540 of 740 services (326 services are lazy, passive or on-demand) - Server configuration file in use: standalone.xml
+----
+
